@@ -1,13 +1,25 @@
+import api from "../api/api";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import "../styles/dietbuddy-theme.css";
+import axios from "axios";
+
+interface Credentials {
+  username: string;
+  email: string;
+  password: string;
+  firstname: string;
+  lastname: string;
+}
 
 export default function SignUp() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [credentials, setCredential] = useState<Credentials>({
+    username: "",
+    email: "",
+    password: "",
+    firstname: "",
+    lastname: "",
+  });
 
   const [message, setMessage] = useState("");
   const [messageColor, setMessageColor] = useState<"red" | "green">("red");
@@ -18,66 +30,61 @@ export default function SignUp() {
     setMessageColor(color);
   };
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
 
-    if (!firstName.trim() || !lastName.trim()) {
-      showMessage("Please enter your first and last name.", "red");
+    setCredential((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (Object.values(credentials).some((value) => value.trim() === "")) {
+      showMessage("Please fill in all fields.", "red");
       return;
     }
 
-    if (!username.trim()) {
-      showMessage("Username cannot be empty.", "red");
-      return;
-    }
-
-    if (password.length < 8) {
-      showMessage("Password must be at least 8 characters long.", "red");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      showMessage("Passwords do not match.", "red");
-      return;
-    }
+    setLoading(true);
+    setMessage("");
 
     try {
-      setLoading(true);
+      const response = await api.post(
+        "/auth/signup",
+        credentials
+      );
 
-      const response = await fetch("http://localhost:5042/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          username,
-          password,
-        }),
+      showMessage(
+        response.data.message || "Account created successfully!",
+        "green"
+      );
+
+      // Clear form
+      setCredential({
+        username: "",
+        email: "",
+        password: "",
+        firstname: "",
+        lastname: "",
       });
 
-      const data = await response.json();
-
-      if (!response.ok || data.success === false) {
-        showMessage(data.message ?? "Unable to create account.", "red");
-        return;
-      }
-
-      showMessage("Account created successfully! Please sign in.", "green");
-
-      setFirstName("");
-      setLastName("");
-      setUsername("");
-      setPassword("");
-      setConfirmPassword("");
+      // Optional: Redirect after signup
+      // navigate("/signin");
     } catch (error) {
-      console.error(error);
-      showMessage("Unable to connect to the server.", "red");
+      if (axios.isAxiosError(error)) {
+        showMessage(
+          error.response?.data?.message || "Registration failed.",
+          "red"
+        );
+      } else {
+        showMessage("Something went wrong.", "red");
+      }
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <main className="dashboard">
@@ -103,45 +110,65 @@ export default function SignUp() {
           </div>
 
           <form onSubmit={handleSubmit}>
-            <label>First Name</label>
-            <input
-              type="text"
-              value={firstName}
-              placeholder="John"
-              onChange={(e) => setFirstName(e.target.value)}
-            />
+            <div className="mb-3">
+              <input
+                type="text"
+                name="firstname"
+                placeholder="First Name"
+                value={credentials.firstname}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
 
-            <label>Last Name</label>
-            <input
-              type="text"
-              value={lastName}
-              placeholder="Doe"
-              onChange={(e) => setLastName(e.target.value)}
-            />
+            <div className="mb-3">
+              <input
+                type="text"
+                name="lastname"
+                placeholder="Last Name"
+                value={credentials.lastname}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
 
-            <label>Username</label>
-            <input
-              type="text"
-              value={username}
-              placeholder="john_doe"
-              onChange={(e) => setUsername(e.target.value)}
-            />
+            <div className="mb-3">
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                value={credentials.username}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
 
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              placeholder="Create a password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="mb-3">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={credentials.email}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
 
-            <label>Confirm Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              placeholder="Confirm your password"
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
+            <div className="mb-3">
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={credentials.password}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
 
             {message && (
               <div
