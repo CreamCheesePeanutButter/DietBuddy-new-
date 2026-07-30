@@ -56,22 +56,12 @@ export default function SignUp() {
         credentials
       );
 
-      showMessage(
-        response.data.message || "Account created successfully!",
-        "green"
-      );
+      if(response.data.success){
+        showMessage("Sign up successfully", "green")
+        localStorage.setItem("token", response.data.token)
+        console.log(response);
+      }
 
-      // Clear form
-      setCredential({
-        username: "",
-        email: "",
-        password: "",
-        firstname: "",
-        lastname: "",
-      });
-
-      // Optional: Redirect after signup
-      // navigate("/signin");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         showMessage(

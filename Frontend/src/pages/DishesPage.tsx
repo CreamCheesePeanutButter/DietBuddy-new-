@@ -1,81 +1,61 @@
-import { AxiosImage } from "../api/axiosImage";
-import api from "../api/api";
 import { useEffect, useState } from "react";
+import api from "../api/api";
+import Sidebar from "../components/Sidebar";
+import DishCard from "../components/DishCard";
+
 interface Ingredient {
-  id: number;
-  name: string;
-  description: string;
-  amount: number;
-  measurementUnit: string;
-  calories: number;
+    id: number;
+    name: string;
+    amount: number;
+    measurementUnit: string;
 }
 
 interface Dish {
-  id: number;
-  name: string;
-  imageUrl: string;
-  description: string;
-  instruction: string;
-  calories: number;
-  ingredients: Ingredient[];
-  viewCount: number;
+    id: number;
+    name: string;
+    description: string;
+    instruction: string;
+    calories: number;
+    viewCount: number;
+    ingredients: Ingredient[];
 }
 
-export function DishesPage() {
-  const [dishes, setDishes] = useState<Dish[]>([]);
+export default function DishesPage() {
+    const [dishes, setDishes] = useState<Array<Dish>>([]);
 
-  useEffect(() => {
-    api
-      .get("/dishes/top-dishes")
-      .then((response) => setDishes(response.data))
-      .catch((error) => console.error(error));
-  }, []);
+    useEffect(() => {
+        api.get("/dishes/top-dishes").then((res) => {
+            setDishes(res.data);
+        });
+    }, []);
 
-  return (
-    <div></div>
-    // <div className="grid grid-cols-5 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    //   {dishes.map((dish) => (
-    //     <div key={dish.id} className="bg-white rounded-xl shadow-lg p-5 w-80">
-    //       <h2 className="text-xl font-bold mb-2">{dish.name}</h2>
-    //       <AxiosImage
-    //         dishId={dish.id} // Passes the loop's dish.id to the fetch configuration
-    //         alt={dish.name}
-    //         className="w-full h-48 object-cover rounded-lg mb-3"
-    //       />
-    //       <p className="text-gray-600 mb-3">{dish.description}</p>
+    return (
+        <div className="flex bg-white">
+            <Sidebar />
 
-    //       <p>
-    //         <strong>Calories:</strong> {dish.calories}
-    //       </p>
+            <main className="flex-1 p-8">
+                <h1 className="text-4xl font-bold mb-10">
+                    Popular Dishes
+                </h1>
 
-    //       <p>
-    //         <strong>Views:</strong> {dish.viewCount}
-    //       </p>
-
-    //       <p>
-    //         <strong>Ingredients:</strong> {dish.ingredients.length}
-    //       </p>
-
-    //       <div className="mt-4">
-    //         <h3 className="font-semibold mb-2">Ingredients</h3>
-
-    //         <ul className="list-disc ml-5 text-sm">
-    //           {dish.ingredients.map((ingredient) => (
-    //             <li key={ingredient.id}>
-    //               {ingredient.name} - {ingredient.amount}{" "}
-    //               {ingredient.measurementUnit}
-    //             </li>
-    //           ))}
-    //         </ul>
-    //       </div>
-
-    //       <div className="mt-4">
-    //         <h3 className="font-semibold">Instructions</h3>
-
-    //         <p className="text-sm text-gray-700 mt-1">{dish.instruction}</p>
-    //       </div>
-    //     </div>
-    //   ))}
-    // </div>
-  );
+                <div
+                    className="
+                        grid
+                        grid-cols-1
+                        md:grid-cols-2
+                        xl:grid-cols-3
+                        2xl:grid-cols-4
+                        gap-8
+                    "
+                >
+                    {dishes.map((dish) => (
+                        <DishCard
+                            key={dish.id}
+                            dish={dish}
+                        />
+                    ))}
+                </div>
+            </main>
+        </div>
+    );
 }

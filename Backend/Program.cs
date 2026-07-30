@@ -59,15 +59,13 @@ var app = builder.Build();
 
 app.UseCors("AllowFrontend");
 
-// Auto-apply migrations on startup
+// Auto-apply migrations on startup 
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
 
-// app.MapAuthorizationEndPoints();
-// app.MapMealPlanEndPoints();
 
 app.UseAuthentication(); // Must come before UseAuthorization
 app.UseAuthorization();

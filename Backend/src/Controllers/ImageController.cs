@@ -22,7 +22,7 @@ namespace DietBuddy.Controllers
         public async Task<IActionResult> GetImage(int id)
         {
             // Maps safely to C:\Users\cream\Desktop\DietBuddy\DietBuddy\res\{id}.jpg
-            string inputPath = Path.Combine(_env.ContentRootPath,"Backend","src", "res", $"{id}.jpg");
+            string inputPath = Path.Combine(_env.ContentRootPath,"src", "res", $"{id}.jpg");
             Console.WriteLine($"Looking for image file at: {inputPath}");
 
             try
@@ -31,7 +31,7 @@ namespace DietBuddy.Controllers
                 if (!System.IO.File.Exists(inputPath))
                 {
                     // return NotFound(new { message = $"Image with ID {id} not found." });
-                    inputPath = Path.Combine(_env.ContentRootPath,"Backend","src", "res", $"0.jpg");
+                    inputPath = Path.Combine(_env.ContentRootPath,"src", "res", $"0.jpg");
                 }
 
                 // Asynchronously ingest file stream data to avoid lock overheads

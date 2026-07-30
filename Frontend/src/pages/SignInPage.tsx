@@ -1,17 +1,22 @@
 import { Link } from "react-router-dom";
 import "../styles/dietbuddy-theme.css";
+import api from "../api/api"
+import axios from "axios"
 import { useState, type ChangeEvent } from "react";
 
 interface Credentials {
-  email: string;
+  username: string;
   password: string;
 }
 
 export default function SignIn() {
+  
   const [credentials, setCredentials] = useState<Credentials>({
-    email: "",
+    username: "",
     password: "",
   });
+  const [message, setMessage] = useState<string>()
+  const [messageColor, setMessageColor] = useState<string>()
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCredentials({
@@ -19,6 +24,36 @@ export default function SignIn() {
       [e.target.name]: e.target.value,
     });
   };
+  const showMessage = (text: string, color: "red" | "green") => {
+    setMessage(text);
+    setMessageColor(color);
+  };
+
+  const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const response = await api.post(
+        "/auth/login",
+        credentials
+      );
+      if(response.data.success){
+        showMessage("Sign up successfully", "green")
+        localStorage.setItem("token", response.data.token)
+        console.log(response);
+         window.location.href = "/dishes"
+      }
+      else{
+        showMessage(response.data.message, "red")
+      }
+    }
+     catch (error) {
+      if (axios.isAxiosError(error)) {
+        showMessage(error.name, "red")
+       console.log(error);
+      }
+    }
+  }
   
   return (
     <main className="dashboard">
@@ -43,17 +78,20 @@ export default function SignIn() {
             <p>Welcome back!</p>
           </div>
 
-          <form>
+          <form  onSubmit={handleSubmit}>
             <label>Username</label>
             <input
-              type="text"
+              type="username"
+              name="username"
               placeholder="Enter your username"
               onChange={handleChange}
             />
 
+
             <label>Password</label>
             <input
               type="password"
+              name="password"
               placeholder="Enter your password"
               onChange={handleChange}
             />
@@ -76,7 +114,21 @@ export default function SignIn() {
 
               <a href="/">Forgot Password?</a>
             </div>
-
+            {message && (
+              <div
+                style={{
+                  marginTop: "12px",
+                  padding: "10px",
+                  borderRadius: "8px",
+                  backgroundColor:
+                    messageColor === "red" ? "#ffe6e6" : "#e6ffe6",
+                  color: messageColor,
+                  textAlign: "center",
+                }}
+              >
+                {message}
+              </div>
+            )}
             <button
               type="submit"
               className="btn-primary"

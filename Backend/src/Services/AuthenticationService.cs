@@ -13,6 +13,9 @@ public class AuthenticationService
     {
         _db = db;
     }
+
+
+    //Login 
     public AuthenticationServiceResponse Validate(LoginDTO loginDTO)
     {
         var user = _db.Users.FirstOrDefault(u => u.Username == loginDTO.Username && u.Password == loginDTO.Password);
@@ -23,6 +26,8 @@ public class AuthenticationService
         }
         return new AuthenticationServiceResponse(false, null!, "Invalid username or password");
     }
+
+    //Generate Refresh Token
     public RefreshToken GenerateRefreshToken(User user)
     {
         var token = new RefreshToken
