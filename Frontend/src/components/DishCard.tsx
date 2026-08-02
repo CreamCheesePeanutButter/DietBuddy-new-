@@ -14,16 +14,7 @@ export default function DishCard({ dish }: Props) {
             className="cursor-pointer group"
             onClick={() => navigate(`/dishes/${dish.id}`)}
         >
-            <div
-                className="
-                    h-56
-                    w-full
-                    overflow-hidden
-                    rounded-2xl
-                    bg-gray-200
-                    shadow
-                "
-            >
+            <div className="aspect-square overflow-hidden rounded-2xl bg-gray-200 shadow">
                 <AxiosImage
                     dishId={dish.id}
                     alt={dish.name}

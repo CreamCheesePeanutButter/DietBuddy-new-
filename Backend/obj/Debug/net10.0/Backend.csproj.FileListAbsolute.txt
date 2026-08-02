@@ -130,3 +130,6 @@
 /home/shrimp/Desktop/DietBuddy-new-/Backend/obj/Debug/net10.0/Backend.pdb
 /home/shrimp/Desktop/DietBuddy-new-/Backend/obj/Debug/net10.0/Backend.genruntimeconfig.cache
 /home/shrimp/Desktop/DietBuddy-new-/Backend/obj/Debug/net10.0/ref/Backend.dll
+/home/shrimp/Desktop/DietBuddy-new-/Backend/bin/Debug/net10.0/RESPite.dll
+/home/shrimp/Desktop/DietBuddy-new-/Backend/bin/Debug/net10.0/StackExchange.Redis.dll
+/home/shrimp/Desktop/DietBuddy-new-/Backend/bin/Debug/net10.0/System.IO.Hashing.dll

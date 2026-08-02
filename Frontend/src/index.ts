@@ -1,1 +1,1 @@
-import "./frontend";
+import "./main";

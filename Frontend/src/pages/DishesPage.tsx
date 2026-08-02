@@ -21,7 +21,7 @@ interface Dish {
 }
 
 export default function DishesPage() {
-    const [dishes, setDishes] = useState<Array<Dish>>([]);
+    const [dishes, setDishes] = useState<Dish[]>([]);
 
     useEffect(() => {
         api.get("/dishes/top-dishes").then((res) => {
@@ -30,7 +30,7 @@ export default function DishesPage() {
     }, []);
 
     return (
-        <div className="flex bg-white">
+        <div className="flex min-h-screen bg-white">
             <Sidebar />
 
             <main className="flex-1 p-8">
@@ -38,21 +38,12 @@ export default function DishesPage() {
                     Popular Dishes
                 </h1>
 
-                <div
-                    className="
-                        grid
-                        grid-cols-1
-                        md:grid-cols-2
-                        xl:grid-cols-3
-                        2xl:grid-cols-4
-                        gap-8
-                    "
-                >
+                <div className="grid grid-cols-4 gap-4 p-4">
                     {dishes.map((dish) => (
-                        <DishCard
-                            key={dish.id}
-                            dish={dish}
-                        />
+                    <DishCard
+                        key={dish.id}
+                        dish={dish}
+                    />
                     ))}
                 </div>
             </main>
