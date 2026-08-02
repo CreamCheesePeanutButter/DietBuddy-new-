@@ -1,24 +1,46 @@
-namespace DietBuddy.Services;
 using DietBuddy.Data;
 using DietBuddy.Models;
 using DietBuddy.DTOs.Response;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
+using System.Text.Json;
+
+namespace DietBuddy.Services;
 
 public class DishDisplayService
 {
     private readonly AppDbContext _context;
 
-    public DishDisplayService(AppDbContext context)
+    private readonly IDatabase _redis;
+
+
+    public DishDisplayService(AppDbContext context, IConnectionMultiplexer connection)
     {
         _context = context;
+        _redis = connection.GetDatabase();
     }
-    // public async Task<IList<>
+
+    private const string TopDishesCacheKey = "top-dishes";
 
     public async Task<IList<DishDTO>> GetTopViewedDishes()
     {
-        return await _context.Dishes
+        //Check if redis has the data or not
+        var cached = await _redis.StringGetAsync(TopDishesCacheKey);
+
+        if (cached.HasValue)
+        {
+            Console.WriteLine("Loaded from Redis");
+            Console.WriteLine(cached);
+            var cachedDishes = JsonSerializer.Deserialize<List<DishDTO>>(cached.ToString())!;
+
+            if (cachedDishes != null)
+            {
+                return cachedDishes;
+            }
+        }
+        var dishes = await _context.Dishes
             .OrderByDescending(d => d.ViewCount)
-            .Take(4)
+            .Take(30)
             .Select(d => new DishDTO(
             
                 d.DishId,
@@ -40,6 +62,12 @@ public class DishDisplayService
                 d.ViewCount
             ))
             .ToListAsync();
+        await _redis.StringSetAsync(
+            TopDishesCacheKey,
+            JsonSerializer.Serialize(dishes),
+            TimeSpan.FromMinutes(0)
+        );
+        return dishes;
     }
 
 }
