@@ -1,6 +1,4 @@
 import "../styles/dietbuddy-theme.css";
-import React from "react";
-
 export default function Homepage() {
   function handleCreateAccount() {
     // Redirect to the account creation page

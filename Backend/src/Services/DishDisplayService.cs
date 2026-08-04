@@ -30,7 +30,6 @@ public class DishDisplayService
         if (cached.HasValue)
         {
             Console.WriteLine("Loaded from Redis");
-            Console.WriteLine(cached);
             var cachedDishes = JsonSerializer.Deserialize<List<DishDTO>>(cached.ToString())!;
 
             if (cachedDishes != null)
@@ -65,7 +64,7 @@ public class DishDisplayService
         await _redis.StringSetAsync(
             TopDishesCacheKey,
             JsonSerializer.Serialize(dishes),
-            TimeSpan.FromMinutes(0)
+            TimeSpan.FromMinutes(10)
         );
         return dishes;
     }

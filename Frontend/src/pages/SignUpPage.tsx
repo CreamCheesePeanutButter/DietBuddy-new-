@@ -60,6 +60,7 @@ export default function SignUp() {
         showMessage("Sign up successfully", "green")
         localStorage.setItem("token", response.data.token)
         console.log(response);
+        window.location.href = "/dishes"
       }
 
     } catch (error) {
