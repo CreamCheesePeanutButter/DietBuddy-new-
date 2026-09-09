@@ -16,6 +16,7 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
-EXPOSE 8080
+EXPOSE 7000
+ENV ASPNETCORE_URLS=http://+:7000
 
 ENTRYPOINT ["dotnet", "Backend.dll"]
